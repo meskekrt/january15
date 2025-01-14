@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Boldog Évfordulót!</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Playfair Display', serif;
+            background: #e1d8b4; /* Bézs háttér */
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center; /* Középre igazítás */
+            align-items: center; /* Középre igazítás */
+            flex-direction: column;
+            text-align: center;
+            overflow: hidden;
+        }
+
+        button {
+            background: linear-gradient(to bottom right, #f9f1e9, #dbcbb7);
+            color: #5a4835;
+            border: 2px solid #5a4835;
+            border-radius: 50px;
+            padding: 15px 30px;
+            font-size: 1.2em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            z-index: 10;
+            margin-bottom: 50px;
+        }
+
+        button:hover {
+            background: linear-gradient(to bottom right, #dbcbb7, #f9f1e9);
+            color: #3d2f20;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .container {
+            max-width: 90%;
+            padding: 20px;
+            background: transparent;
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeInUp 2.5s ease-in-out forwards; /* Finom animáció */
+            z-index: 1;
+            position: relative;
+            margin-top: 20px; /* Kicsit fentebb helyezve */
+        }
+
+        @keyframes fadeInUp {
+            0% {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h1 {
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeInUp 2s ease-in-out forwards;
+            color: #5a4835; /* Barna szín */
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+        }
+
+        img {
+            border-radius: 10px;
+            width: 50%; /* Kép kisebb */
+            max-width: 500px;
+            height: auto;
+            margin: 20px auto;
+            display: block;
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeInUp 2s ease-in-out forwards;
+        }
+
+        p {
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeInUp 2s ease-in-out forwards;
+            font-size: 1.5rem;
+            margin: 10px 0;
+        }
+
+        #confettiCanvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 2;
+            display: none;
+        }
+
+        .background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #e1d8b4;
+            opacity: 1;
+            z-index: 1;
+        }
+
+        /* Reszponzív dizájn */
+        @media screen and (max-width: 600px) {
+            h1 {
+                font-size: 1.8rem;
+            }
+
+            button {
+                font-size: 1em;
+                padding: 12px 24px;
+            }
+
+            img {
+                width: 80%;
+            }
+
+            p {
+                font-size: 1.2rem;
+            }
+        }
+
+    </style>
+</head>
+<body>
+
+    <button id="startButton">Kattints ide! 😊</button>
+
+    <canvas id="confettiCanvas"></canvas>
+
+    <div class="background" id="background"></div>
+
+    <div class="container hidden" id="mainContent">
+        <h1 id="title">Boldog évfordulót Szívem!</h1>
+        <img id="image" src="kettonk_kep.jpg" alt="Rólunk egy kép">
+        <p id="message1">Nagyon szeretlek! ❤️</p>
+        <p id="message2">Köszönöm Neked ezt az évet és a sok csodás pillanatot!</p>
+        <p id="message3">Hálás vagyok érted! ❤️</p>
+    </div>
+
+    <script>
+        const startButton = document.getElementById('startButton');
+        const mainContent = document.getElementById('mainContent');
+        const title = document.getElementById('title');
+        const image = document.getElementById('image');
+        const messages = [
+            document.getElementById('message1'),
+            document.getElementById('message2'),
+            document.getElementById('message3')
+        ];
+
+        const confettiCanvas = document.getElementById('confettiCanvas');
+        const confetti = confettiCanvas.getContext('2d');
+        const confettiParticles = [];
+        const background = document.getElementById('background');
+
+        // Konfetti részecske létrehozása
+        function createConfettiParticle() {
+            return {
+                x: Math.random() * confettiCanvas.width,
+                y: Math.random() * confettiCanvas.height - confettiCanvas.height,
+                r: Math.random() * 6 + 4,
+                d: Math.random() * 10 + 5,
+                color: `hsl(${Math.random() * 30 + 20}, 100%, 80%)`, // Elegáns színek
+                tilt: Math.random() * 10 - 5,
+                tiltAngleIncrement: Math.random() * 0.07 + 0.03,
+                tiltAngle: Math.random() * Math.PI,
+            };
+        }
+
+        // Konfetti rajzolása
+        function drawConfetti() {
+            confetti.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
+
+            for (let particle of confettiParticles) {
+                confetti.beginPath();
+                confetti.lineWidth = particle.r / 2;
+                confetti.strokeStyle = particle.color;
+                confetti.moveTo(particle.x + particle.tilt, particle.y);
+                confetti.lineTo(particle.x + particle.tilt + particle.r, particle.y + particle.r);
+                confetti.stroke();
+            }
+
+            updateConfetti();
+        }
+
+        // Konfetti frissítése
+        function updateConfetti() {
+            for (let particle of confettiParticles) {
+                particle.tiltAngle += particle.tiltAngleIncrement;
+                particle.y += particle.d / 3;
+                particle.x += Math.sin(particle.tiltAngle);
+                particle.tilt = Math.sin(particle.tiltAngle) * 15;
+
+                if (particle.y > confettiCanvas.height) {
+                    particle.y = -10;
+                    particle.x = Math.random() * confettiCanvas.width;
+                }
+            }
+
+            // Új részecskék folyamatos létrehozása
+            if (confettiParticles.length < 200) {
+                confettiParticles.push(createConfettiParticle());
+            }
+        }
+
+        // Konfetti elindítása
+        function startConfetti() {
+            confettiCanvas.width = window.innerWidth;
+            confettiCanvas.height = window.innerHeight;
+
+            confettiCanvas.style.display = 'block';
+
+            const interval = setInterval(drawConfetti, 33); // Folyamatos rajzolás
+        }
+
+        // Tartalom megjelenítése fokozatosan
+        function revealContent() {
+            // A konfetti és a szövegek egyszerre jelennek meg
+            mainContent.classList.remove('hidden');
+            title.style.animation = 'fadeInUp 2s ease-in-out forwards';
+            image.style.animation = 'fadeInUp 2s ease-in-out forwards';
+            messages.forEach((msg, index) => {
+                msg.style.animation = `fadeInUp 2s ease-in-out forwards ${index * 0.5}s`; // Üzenetek késleltetése
+            });
+        }
+
+        // Gomb kattintás esemény
+        startButton.addEventListener('click', () => {
+            startButton.classList.add('hidden');
+            startConfetti();
+            revealContent(); // Szövegek és kép egyszerre
+        });
+    </script>
+</body>
+</html>
